@@ -133,7 +133,7 @@ public class Main {
         if (proveedor1 != null) {
             System.out.println("✓ Proveedor encontrado: " + proveedor1);
         }
-
+//ojo
         // READ - Buscar por nombre
         System.out.println("\n[READ] Buscando proveedores que contengan 'Central'...");
         List<Proveedor> proveedoresEncontrados = proveedorDAO.buscarPorNombre("Central");
