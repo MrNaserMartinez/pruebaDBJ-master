@@ -48,7 +48,7 @@ public class CompraDAO {
                     pstmtDetalle = conn.prepareStatement(sqlDetalle);
 
                     for (CompraDetalle detalle : detalles) {
-                        pstmtDetalle.setString(1, String.valueOf(detalle.getCantidadDetalle()));
+                        pstmtDetalle.setInt(1, detalle.getCantidadDetalle()); // CORREGIDO: setInt en lugar de setString
                         pstmtDetalle.setBigDecimal(2, detalle.getPrecioUnitarioDetalle());
                         pstmtDetalle.setInt(3, idCompra);
                         pstmtDetalle.setInt(4, detalle.getIdProducto());
@@ -370,12 +370,12 @@ public class CompraDAO {
     }
 
     // ========================================
-    // MÉTODO AUXILIAR - Mapear ResultSet a CompraDetalle
+    // MÉTODO AUXILIAR - Mapear ResultSet a CompraDetalle - CORREGIDO
     // ========================================
     private CompraDetalle mapearDetalle(ResultSet rs) throws SQLException {
         CompraDetalle detalle = new CompraDetalle();
         detalle.setIdDetalle(rs.getInt("Id_Detalle"));
-        detalle.setCantidadDetalle(Integer.parseInt(rs.getString("Cantidad_Detalle")));
+        detalle.setCantidadDetalle(rs.getInt("Cantidad_Detalle")); // CORREGIDO: getInt en lugar de getString + parseInt
         detalle.setPrecioUnitarioDetalle(rs.getBigDecimal("PrecioUnitario_Detalle"));
         detalle.setIdCompra(rs.getInt("Id_Compra"));
         detalle.setIdProducto(rs.getInt("Id_Producto"));

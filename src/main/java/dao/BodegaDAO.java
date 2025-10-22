@@ -8,11 +8,11 @@ import java.util.List;
 
 public class BodegaDAO {
 
-    // CREATE
+    // CREATE - CORREGIDO: Sin Depto_Id
     public boolean insertar(Bodega bodega) {
         String sql = "INSERT INTO Place.Tb_Bodegas (Nombre_Bodega, Ubicacion_Bodega, " +
-                "Descripcion_Bodega, Telefono_Bodega, Capacidad_Bodega, Mpio_Id, Depto_Id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                "Descripcion_Bodega, Telefono_Bodega, Capacidad_Bodega, Mpio_Id) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -21,9 +21,8 @@ public class BodegaDAO {
             pstmt.setString(2, bodega.getUbicacionBodega());
             pstmt.setString(3, bodega.getDescripcionBodega());
             pstmt.setString(4, bodega.getTelefonoBodega());
-            pstmt.setString(5, bodega.getCapacidadBodega());
+            pstmt.setInt(5, bodega.getCapacidadBodega()); // CORREGIDO: Ahora es setInt
             pstmt.setInt(6, bodega.getMpioId());
-            pstmt.setInt(7, bodega.getDeptoId());
 
             int filasAfectadas = pstmt.executeUpdate();
 
@@ -104,10 +103,12 @@ public class BodegaDAO {
         return bodegas;
     }
 
-    // READ - Por departamento
+    // READ - Por departamento (CORREGIDO: Ahora usa JOIN con municipios)
     public List<Bodega> obtenerPorDepartamento(int deptoId) {
         List<Bodega> bodegas = new ArrayList<>();
-        String sql = "SELECT * FROM Place.Tb_Bodegas WHERE Depto_Id = ?";
+        String sql = "SELECT b.* FROM Place.Tb_Bodegas b " +
+                "INNER JOIN Place.Tb_Municipios m ON b.Mpio_Id = m.Mpio_Id " +
+                "WHERE m.Depto_Id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -126,11 +127,11 @@ public class BodegaDAO {
         return bodegas;
     }
 
-    // UPDATE
+    // UPDATE - CORREGIDO: Sin Depto_Id
     public boolean actualizar(Bodega bodega) {
         String sql = "UPDATE Place.Tb_Bodegas SET Nombre_Bodega = ?, Ubicacion_Bodega = ?, " +
                 "Descripcion_Bodega = ?, Telefono_Bodega = ?, Capacidad_Bodega = ?, " +
-                "Mpio_Id = ?, Depto_Id = ? WHERE Id_Bodega = ?";
+                "Mpio_Id = ? WHERE Id_Bodega = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -139,10 +140,9 @@ public class BodegaDAO {
             pstmt.setString(2, bodega.getUbicacionBodega());
             pstmt.setString(3, bodega.getDescripcionBodega());
             pstmt.setString(4, bodega.getTelefonoBodega());
-            pstmt.setString(5, bodega.getCapacidadBodega());
+            pstmt.setInt(5, bodega.getCapacidadBodega()); // CORREGIDO: Ahora es setInt
             pstmt.setInt(6, bodega.getMpioId());
-            pstmt.setInt(7, bodega.getDeptoId());
-            pstmt.setInt(8, bodega.getIdBodega());
+            pstmt.setInt(7, bodega.getIdBodega());
 
             return pstmt.executeUpdate() > 0;
 
@@ -168,7 +168,7 @@ public class BodegaDAO {
         }
     }
 
-    // Mapear ResultSet a Bodega
+    // Mapear ResultSet a Bodega - CORREGIDO
     private Bodega mapearBodega(ResultSet rs) throws SQLException {
         Bodega b = new Bodega();
         b.setIdBodega(rs.getInt("Id_Bodega"));
@@ -176,9 +176,9 @@ public class BodegaDAO {
         b.setUbicacionBodega(rs.getString("Ubicacion_Bodega"));
         b.setDescripcionBodega(rs.getString("Descripcion_Bodega"));
         b.setTelefonoBodega(rs.getString("Telefono_Bodega"));
-        b.setCapacidadBodega(rs.getString("Capacidad_Bodega"));
+        b.setCapacidadBodega(rs.getInt("Capacidad_Bodega")); // CORREGIDO: Ahora es getInt
         b.setMpioId(rs.getInt("Mpio_Id"));
-        b.setDeptoId(rs.getInt("Depto_Id"));
+        // ELIMINADO: b.setDeptoId(rs.getInt("Depto_Id"));
         return b;
     }
 }

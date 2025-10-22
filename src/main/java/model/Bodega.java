@@ -1,4 +1,4 @@
-// Clase modelo Bodega
+// Clase modelo Bodega - CORREGIDO
 package model;
 
 public class Bodega {
@@ -7,15 +7,15 @@ public class Bodega {
     private String ubicacionBodega;
     private String descripcionBodega;
     private String telefonoBodega;
-    private String capacidadBodega;
+    private int capacidadBodega; // CORREGIDO: Ahora es int en lugar de String
     private int mpioId;
-    private int deptoId;
+    // ELIMINADO: private int deptoId; (Violaba 3FN - se obtiene a través de Mpio_Id)
 
     public Bodega() {}
 
     public Bodega(int idBodega, String nombreBodega, String ubicacionBodega,
-                  String descripcionBodega, String telefonoBodega, String capacidadBodega,
-                  int mpioId, int deptoId) {
+                  String descripcionBodega, String telefonoBodega, int capacidadBodega,
+                  int mpioId) {
         this.idBodega = idBodega;
         this.nombreBodega = nombreBodega;
         this.ubicacionBodega = ubicacionBodega;
@@ -23,7 +23,6 @@ public class Bodega {
         this.telefonoBodega = telefonoBodega;
         this.capacidadBodega = capacidadBodega;
         this.mpioId = mpioId;
-        this.deptoId = deptoId;
     }
 
     // Getters y Setters
@@ -42,14 +41,11 @@ public class Bodega {
     public String getTelefonoBodega() { return telefonoBodega; }
     public void setTelefonoBodega(String telefonoBodega) { this.telefonoBodega = telefonoBodega; }
 
-    public String getCapacidadBodega() { return capacidadBodega; }
-    public void setCapacidadBodega(String capacidadBodega) { this.capacidadBodega = capacidadBodega; }
+    public int getCapacidadBodega() { return capacidadBodega; }
+    public void setCapacidadBodega(int capacidadBodega) { this.capacidadBodega = capacidadBodega; }
 
     public int getMpioId() { return mpioId; }
     public void setMpioId(int mpioId) { this.mpioId = mpioId; }
-
-    public int getDeptoId() { return deptoId; }
-    public void setDeptoId(int deptoId) { this.deptoId = deptoId; }
 
     @Override
     public String toString() {
@@ -58,8 +54,8 @@ public class Bodega {
                 ", nombreBodega='" + nombreBodega + '\'' +
                 ", ubicacionBodega='" + ubicacionBodega + '\'' +
                 ", descripcionBodega='" + descripcionBodega + '\'' +
+                ", capacidadBodega=" + capacidadBodega +
                 ", mpioId=" + mpioId +
-                ", deptoId=" + deptoId +
                 '}';
     }
 }

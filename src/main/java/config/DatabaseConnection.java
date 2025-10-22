@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=Db_DevSolutions;encrypt=true;trustServerCertificate=true";
-    private static final String USER = "tu_usuario";
-    private static final String PASSWORD = "tu_contraseña";
+    // Cambia localhost por la IP de tu VM
+    private static final String URL = "jdbc:sqlserver://192.168.0.21:1433;databaseName=Db_DevSolutionsF;encrypt=true;trustServerCertificate=true";
+    private static final String USER = "sa";
+    private static final String PASSWORD = "Test12345.";
 
     private static Connection connection = null;
 
@@ -22,6 +23,7 @@ public class DatabaseConnection {
             System.err.println("Driver no encontrado: " + e.getMessage());
         } catch (SQLException e) {
             System.err.println("Error de conexión: " + e.getMessage());
+            e.printStackTrace(); // Para ver detalles del error
         }
         return connection;
     }

@@ -8,19 +8,21 @@ import java.util.List;
 
 public class InventarioDAO {
 
-    // CREATE
+    // CREATE - CORREGIDO
+    // CREATE - CORREGIDO
     public boolean insertar(Inventario inventario) {
         String sql = "INSERT INTO List.Tb_Inventarios (Cantidad_Inventario, PrecioVenta_Inventario, " +
-                "FechaActualizacion_Inventario, Id_Bodega, Id_Producto) VALUES (?, ?, ?, ?, ?)";
+                "FechaActualizacion_Inventario, Id_Bodega, Id_Producto) VALUES (?, ?, GETDATE(), ?, ?)";
+        //                                                                              ↑ Usa GETDATE() directamente
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setString(1, String.valueOf(inventario.getCantidadInventario()));
+            pstmt.setInt(1, inventario.getCantidadInventario());
             pstmt.setBigDecimal(2, inventario.getPrecioVentaInventario());
-            pstmt.setTimestamp(3, inventario.getFechaActualizacionInventario());
-            pstmt.setInt(4, inventario.getIdBodega());
-            pstmt.setInt(5, inventario.getIdProducto());
+            // ELIMINADA: pstmt.setTimestamp(3, inventario.getFechaActualizacionInventario());
+            pstmt.setInt(3, inventario.getIdBodega()); // Índice ajustado
+            pstmt.setInt(4, inventario.getIdProducto()); // Índice ajustado
 
             int filasAfectadas = pstmt.executeUpdate();
 
@@ -123,10 +125,10 @@ public class InventarioDAO {
         return inventarios;
     }
 
-    // READ - Stock bajo (menor a una cantidad específica)
+    // READ - Stock bajo (menor a una cantidad específica) - CORREGIDO
     public List<Inventario> obtenerStockBajo(int cantidadMinima) {
         List<Inventario> inventarios = new ArrayList<>();
-        String sql = "SELECT * FROM List.Tb_Inventarios WHERE CAST(Cantidad_Inventario AS INT) < ?";
+        String sql = "SELECT * FROM List.Tb_Inventarios WHERE Cantidad_Inventario < ?"; // CORREGIDO: Sin CAST
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -145,7 +147,7 @@ public class InventarioDAO {
         return inventarios;
     }
 
-    // UPDATE
+    // UPDATE - CORREGIDO
     public boolean actualizar(Inventario inventario) {
         String sql = "UPDATE List.Tb_Inventarios SET Cantidad_Inventario = ?, " +
                 "PrecioVenta_Inventario = ?, FechaActualizacion_Inventario = GETDATE(), " +
@@ -154,7 +156,7 @@ public class InventarioDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, String.valueOf(inventario.getCantidadInventario()));
+            pstmt.setInt(1, inventario.getCantidadInventario()); // CORREGIDO: setInt en lugar de setString
             pstmt.setBigDecimal(2, inventario.getPrecioVentaInventario());
             pstmt.setInt(3, inventario.getIdBodega());
             pstmt.setInt(4, inventario.getIdProducto());
@@ -168,7 +170,7 @@ public class InventarioDAO {
         }
     }
 
-    // UPDATE - Solo cantidad
+    // UPDATE - Solo cantidad - CORREGIDO
     public boolean actualizarCantidad(int idInventario, int nuevaCantidad) {
         String sql = "UPDATE List.Tb_Inventarios SET Cantidad_Inventario = ?, " +
                 "FechaActualizacion_Inventario = GETDATE() WHERE Id_Inventario = ?";
@@ -176,7 +178,7 @@ public class InventarioDAO {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, String.valueOf(nuevaCantidad));
+            pstmt.setInt(1, nuevaCantidad); // CORREGIDO: setInt directamente
             pstmt.setInt(2, idInventario);
 
             return pstmt.executeUpdate() > 0;
@@ -244,11 +246,11 @@ public class InventarioDAO {
         return false;
     }
 
-    // Mapear ResultSet a Inventario
+    // Mapear ResultSet a Inventario - CORREGIDO
     private Inventario mapearInventario(ResultSet rs) throws SQLException {
         Inventario inv = new Inventario();
         inv.setIdInventario(rs.getInt("Id_Inventario"));
-        inv.setCantidadInventario(Integer.parseInt(rs.getString("Cantidad_Inventario")));
+        inv.setCantidadInventario(rs.getInt("Cantidad_Inventario")); // CORREGIDO: getInt directamente
         inv.setPrecioVentaInventario(rs.getBigDecimal("PrecioVenta_Inventario"));
         inv.setFechaActualizacionInventario(rs.getTimestamp("FechaActualizacion_Inventario"));
         inv.setIdBodega(rs.getInt("Id_Bodega"));
@@ -256,4 +258,3 @@ public class InventarioDAO {
         return inv;
     }
 }
-
